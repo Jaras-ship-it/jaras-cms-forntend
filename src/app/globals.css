@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* Swiper CSS */
+@import "swiper/css";
+@import "swiper/css/navigation";
+@import "swiper/css/pagination";
+@import "swiper/css/autoplay";
+@import "swiper/css/effect-fade";
+
 @import "preline/variants.css";
 /* @source "../node_modules/preline/dist/*.js"; */
 
@@ -9,12 +16,15 @@
 }
 
 body {
-  /* Global background layers */
-  background: 
-    radial-gradient(circle at 2px 2px, rgba(0,0,0,0.08) 1px, transparent 0),
-    radial-gradient(ellipse at bottom left, #EAF6FF 5%, transparent 80%),
-    radial-gradient(circle at center, white 0%, transparent 25%),
-    linear-gradient(to bottom, #F3FAFF, white, #F3FAFF);
+  /* Global background with multiple layers */
+  background: radial-gradient(
+      circle at 2px 2px,
+      rgba(0, 0, 0, 0.15) 1px,
+      transparent 0
+    ),
+    radial-gradient(ellipse at top left, #108afc17 1%, transparent 20%),
+    radial-gradient(ellipse at center left, #10fc4f1c 1%, transparent 40%),
+    radial-gradient(ellipse at center right, #47e3f429 1%, transparent 40%);
   background-size: 20px 20px, 100% 100%, 100% 100%, 100% 100%;
   background-attachment: local, fixed, fixed, fixed;
   color: var(--foreground);
@@ -30,4 +40,77 @@ body {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Safari and Chrome */
+}
+
+/* Horizontal slider with fade edges */
+.scroll-fade-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.scroll-fade-container::before,
+.scroll-fade-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 20px;
+  opacity: 0.9;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.scroll-fade-container::before {
+  left: 0;
+  background: linear-gradient(to right, white, transparent);
+}
+
+.scroll-fade-container::after {
+  right: 0;
+  background: linear-gradient(to left, white, transparent);
+}
+
+/* Search Modal Animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-from-top {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-in {
+  animation-name: fade-in, slide-in-from-top;
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  animation-fill-mode: both;
+}
+
+.fade-in {
+  animation: fade-in 0.3s ease-in-out;
+}
+
+.slide-in-from-top-4 {
+  animation: slide-in-from-top 0.3s ease-out;
+}
+
+/* Text truncation utility */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
 }

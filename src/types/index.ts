@@ -1,16 +1,16 @@
-export interface Image {
-  url: string;
-  width: number;
-  height: number;
-  alt?: string;
-}
+// Main index file - re-exports all types for convenient importing
 
-export interface Category {
-  id: number;
-  name: string;
-  description: string;
-  Image: Image;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
-}
+// Common types
+export * from "./common";
+
+// Product and category types
+export * from "./product";
+
+// Layout types
+export * from "./layout";
+
+// Home page types
+export * from "./home";
+
+// Global data types
+export * from "./global";

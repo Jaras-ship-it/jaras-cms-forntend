@@ -3,6 +3,7 @@ import Image from "next/image";
 import React, { useRef } from "react";
 import { Category } from "@/types";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 interface CategoriesProps {
   data?: Category[];
@@ -24,21 +25,21 @@ const Categories = ({ data }: CategoriesProps) => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Section Header with Navigation */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-900">التصنيفات</h2>
         <div className="flex gap-2">
           <button
             onClick={scrollRight}
-            className="p-2 rounded-full bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 hover:bg-gray-50"
+            className="p-2 rounded-full hover:bg-white hover:shadow-md transition-shadow duration-200 hover:border-gray-200"
             aria-label="Scroll right"
           >
             <ChevronRight className="w-5 h-5 text-gray-600" />
           </button>
           <button
             onClick={scrollLeft}
-            className="p-2 rounded-full bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 hover:bg-gray-50"
+            className="p-2 rounded-full hover:bg-white hover:border-gray-200 hover:shadow-md transition-shadow duration-200 "
             aria-label="Scroll left"
           >
             <ChevronLeft className="w-5 h-5 text-gray-600" />
@@ -46,34 +47,41 @@ const Categories = ({ data }: CategoriesProps) => {
         </div>
       </div>
 
-      <div ref={scrollContainerRef} className="overflow-x-auto scrollbar-hide">
-        <div className="flex gap-4 pb-4 min-w-max">
-          {data?.map((category) => (
-            <div
-              key={category.id}
-              className="border border-gray-200 rounded-lg p-1 bg-white shadow-tw-shadow flex flex-col min-w-[280px] max-w-[280px]"
-            >
-              <div className="h-48 overflow-hidden">
-                <Image
-                  src={process.env.NEXT_PUBLIC_URL + category.Image.url}
-                  alt="category image"
-                  width={280}
-                  height={192}
-                  priority
-                  className="rounded-md h-full w-full object-cover"
-                />
-              </div>
-              <hr className="border-slate-300 w-full"></hr>
-              <div className="flex flex-col gap-1 p-2">
-                <h2 className="text-lg font-semibold line-clamp-1">
-                  {category.name}
-                </h2>
-                <p className="text-gray-700 text-sm line-clamp-2">
-                  {category.description}
-                </p>
-              </div>
-            </div>
-          ))}
+      <div className="scroll-fade-container">
+        <div
+          ref={scrollContainerRef}
+          className="overflow-x-auto scrollbar-hide"
+        >
+          <div className="flex gap-4 pb-4 min-w-max">
+            {data?.map((category) => (
+              <Link
+                key={category.id}
+                href={`/categories/${category.slug ?? category.id}`}
+                className="bg-white border border-gray-200 rounded-lg overflow-hidden flex flex-col min-w-[280px] max-w-[280px] shadow-lg hover:shadow-xl transition-shadow duration-300 group cursor-pointer "
+                aria-label={`عرض تصنيف ${category.name}`}
+              >
+                <div className="h-48 overflow-hidden relative">
+                  <Image
+                    src={process.env.NEXT_PUBLIC_URL + category.Image.url}
+                    alt={category.Image?.alt || category.name}
+                    width={280}
+                    height={592}
+                    priority
+                    className="rounded-md h-full w-full object-cover transition-transform duration-300 group-hover:scale-110 border border-white "
+                  />
+                  {/* Gradient overlay for better text contrast */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent rounded-t-md"></div>
+
+                  {/* Category title overlay */}
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <h2 className="text-white text-lg font-semibold line-clamp-2 drop-shadow-lg">
+                      {category.name}
+                    </h2>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </div>

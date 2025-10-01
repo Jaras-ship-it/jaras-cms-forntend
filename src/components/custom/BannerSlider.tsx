@@ -19,7 +19,7 @@ const BannerSlider = ({
   }
 
   return (
-    <div className="relative w-full mx-auto mt-8 mb-6">
+    <div className="relative w-full mx-auto mt-9 mb-6">
       <Swiper
         modules={[Navigation, Pagination, Autoplay, EffectFade]}
         spaceBetween={0}
@@ -42,7 +42,7 @@ const BannerSlider = ({
           crossFade: true,
         }}
         loop={banners.length > 1}
-        className="rounded-2xl shadow-2xl overflow-hidden bg-white"
+        className="rounded-lg border-slate-200 overflow-hidden bg-white"
       >
         {banners.map((banner, index) => (
           <SwiperSlide key={banner.id}>
@@ -52,7 +52,7 @@ const BannerSlider = ({
               rel="noopener noreferrer"
               className="block relative group"
             >
-              <div className="relative h-[200px] md:h-[300px] overflow-hidden">
+              <div className="relative h-[200px] md:h-[400px] overflow-hidden">
                 <Image
                   src={process.env.NEXT_PUBLIC_URL + banner.banner_image.url}
                   alt={banner.banner_image.alternativeText || banner.name}
@@ -66,9 +66,9 @@ const BannerSlider = ({
 
                 {/* Banner Title */}
                 <div className="absolute bottom-4 left-4 right-4 z-10">
-                  <h3 className="text-white font-semibold text-lg drop-shadow-lg">
+                  {/* <h3 className="text-white font-semibold text-lg drop-shadow-lg">
                     {banner.name}
-                  </h3>
+                  </h3> */}
                 </div>
               </div>
             </a>

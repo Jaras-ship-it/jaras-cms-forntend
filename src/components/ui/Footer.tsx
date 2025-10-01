@@ -1,6 +1,6 @@
 import React from "react";
 import { Facebook, Instagram, Twitter, Linkedin, Mail } from "lucide-react";
-import Logo from "@/components/custom/Logo";
+import Logo from "@/components/custom/logoIcons/Logo";
 import { Footer as FooterData, SocialLink } from "@/types";
 
 interface FooterProps {

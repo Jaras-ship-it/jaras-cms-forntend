@@ -25,7 +25,7 @@ const Categories = ({ data }: CategoriesProps) => {
   };
 
   return (
-    <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="w-full mx-auto px-4 sm:px-6 lg:px-0 py-12">
       {/* Section Header with Navigation */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-900">التصنيفات</h2>

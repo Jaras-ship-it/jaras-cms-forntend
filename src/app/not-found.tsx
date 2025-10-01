@@ -1,6 +1,6 @@
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import Logo from "@/components/custom/Logo";
+import Logo from "@/components/custom/logoIcons/Logo";
 
 export default function NotFound() {
   return (

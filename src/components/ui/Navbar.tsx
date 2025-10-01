@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Logo from "@/components/custom/Logo";
+import Logo from "@/components/custom/logoIcons/Logo";
+import JarasIcon from "@/components/custom/logoIcons/JarasIcon";
 import GlobalSearch from "@/components/ui/GlobalSearch";
 import { Menu, X } from "lucide-react";
 import { Header } from "@/types";
@@ -14,8 +15,16 @@ const Navbar = ({ data }: Readonly<NavbarProps>) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isClient, setIsClient] = useState(false);
+
+  // Set client state to handle hydration
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
+    if (!isClient) return;
+
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
@@ -39,67 +48,80 @@ const Navbar = ({ data }: Readonly<NavbarProps>) => {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+  }, [lastScrollY, isClient]);
 
   return (
     <header
-      className={`fixed inset-x-0 flex flex-wrap md:justify-start md:flex-nowrap z-50  text-sm transition-transform duration-300 ease-in-out max-w-[1400px] mx-auto ${
-        isVisible ? "translate-y-0" : "-translate-y-full"
+      className={`fixed inset-x-0 flex flex-wrap md:justify-start md:flex-nowrap z-50 text-sm transition-transform duration-300 ease-in-out max-w-[1400px] mx-auto justify-between  ${
+        isClient && isVisible ? "translate-y-0" : "-translate-y-full"
       }`}
       style={{ top: 0 }}
     >
       <nav
         className={`
-        relative w-full flex flex-wrap md:flex-nowrap items-center justify-between 
-        transition-all duration-500 ease-in-out
+        relative w-full flex flex-wrap md:flex-nowrap
+        transition-all duration-500 ease-in-out justify-between items-center
         ${
-          isScrolled
-            ? "mt-4 max-w-4xl border border-gray-200 rounded-[24px] mx-2 p-1 ps-4 md:py-1 sm:mx-auto shadow-lg backdrop-blur-sm bg-white/90"
-            : "mt-0 max-w-none px-8 sm:px-4 lg:px-4 py-4 bg-transparent md:mx-4 shadow-none border-transparent"
+          isClient && isScrolled
+            ? "mt-4 max-w-5xl border border-gray-200 rounded-[24px] mx-2 p-1 ps-4 md:py-1 sm:mx-auto shadow-lg backdrop-blur-sm bg-white/90"
+            : "mt-0 max-w-none px-8 sm:px-4 lg:px-4 py-4  md:mx-4 shadow-none border-transparent  bg-transparent "
         }
       `}
       >
-        <div className="flex items-center ">
+        <div className="flex items-center">
           <Link
             className="flex-none rounded-md text-xl inline-block font-semibold focus:outline-hidden focus:opacity-80"
             href="/"
             aria-label="Preline"
           >
-            <Logo />
+            {isClient && isScrolled ? (
+              <JarasIcon
+                width={32}
+                height={32}
+                className="transition-all duration-300"
+              />
+            ) : (
+              <div className="block md:block">
+                <div className="block sm:hidden">
+                  <JarasIcon
+                    width={28}
+                    height={28}
+                    className="transition-all duration-300"
+                  />
+                </div>
+                <div className="hidden sm:block">
+                  <Logo />
+                </div>
+              </div>
+            )}
           </Link>
           <div
-            className={`mr-3 px-2 border-r-[2px] w-full border-slate-300 ${
-              isScrolled ? "hidden" : "block"
+            className={`mr-3 px-2 border-r-[2px] border-slate-300 ${
+              isClient && isScrolled ? "hidden" : "hidden sm:block"
             }`}
           >
             <p className="text-sm font-bold leading-tight">
               دليل الشركات والموردين
             </p>
           </div>
-          <div className="ms-1 sm:ms-2"></div>
         </div>
 
-        {/* Global Search - Center */}
-        <div className="hidden md:flex flex-1 justify-center mx-4">
-          <div
-            className={`${isScrolled ? "w-full max-w-md" : "w-full max-w-lg"}`}
-          >
-            <GlobalSearch placeholder="البحث في دليل الشركات..." />
+        <div className="flex items-center gap-1">
+          <div className="hidden md:flex w-fit ">
+            <div className="w-80 md:w-96">
+              <GlobalSearch placeholder="البحث في دليل الشركات..." />
+            </div>
           </div>
-        </div>
-
-        <div className="flex items-center gap-1 md:order-4 md:ms-4">
           {/* Mobile Search Button */}
           <div className="md:hidden">
             <GlobalSearch placeholder="البحث..." />
           </div>
-
           <a
             className={`
               w-full sm:w-auto whitespace-nowrap py-2 px-3 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-full border 
               transition-all duration-500 ease-in-out transform hover:scale-105
               ${
-                isScrolled
+                isClient && isScrolled
                   ? "border-transparent bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg"
                   : "border-blue-600 bg-blue-700 text-white hover:bg-blue-700 hover:shadow-md"
               }
@@ -119,7 +141,7 @@ const Navbar = ({ data }: Readonly<NavbarProps>) => {
                 hs-collapse-toggle flex justify-center items-center size-9.5 border rounded-full 
                 transition-all duration-500 ease-in-out transform hover:scale-105
                 ${
-                  isScrolled
+                  isClient && isScrolled
                     ? "border-gray-200 text-gray-500 hover:bg-gray-200 focus:bg-gray-200"
                     : "border-gray-300 text-gray-600 hover:bg-gray-100 focus:bg-gray-100"
                 }
@@ -136,25 +158,8 @@ const Navbar = ({ data }: Readonly<NavbarProps>) => {
             </button>
           </div>
         </div>
-
-        <div
-          id="hs-navbar-header-floating"
-          className="hidden hs-collapse overflow-hidden transition-all duration-300 basis-full grow md:block"
-          aria-labelledby="hs-navbar-header-floating-collapse"
-        >
-          {/* <div className="flex flex-col md:flex-row md:items-center md:justify-end gap-2 md:gap-3 mt-3 md:mt-0 py-2 md:py-0 md:ps-7">
-            <a
-              className="py-0.5 md:py-3 px-4 md:px-1  sm:border-s-0 md:border-b-2 border-gray-800 font-medium text-gray-800 hover:text-gray-800 focus:outline-hidden"
-              href="#"
-              aria-current="page"
-            >
-              Home
-            </a>
-          </div> */}
-        </div>
       </nav>
     </header>
   );
 };
-
 export default Navbar;

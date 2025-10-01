@@ -35,10 +35,10 @@ export default async function RootLayout({
 }>) {
   const globalData = (await getGlobalData()) as GlobalData;
   return (
-    <html lang="ar" dir="rtl">
-      <body className={`${ibmPlexSansArabic.className} antialiased relative`}>
+    <html lang="ar" dir="rtl" className={ibmPlexSansArabic.variable}>
+      <body className="font-sans antialiased relative">
         <Navbar data={globalData.header} />
-        <div className="min-h-[calc(100vh-64px)] max-w-[1400px] mx-auto">
+        <div className="min-h-[calc(100vh-64px)] max-w-[1200px] mx-auto">
           {children}
         </div>
         <Footer data={globalData.footer} />

@@ -1,5 +1,11 @@
 "use client";
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import { createPortal } from "react-dom";
 import { Search, X, Clock, TrendingUp } from "lucide-react";
 
@@ -15,199 +21,37 @@ interface GlobalSearchProps {
   placeholder?: string;
 }
 
-const GlobalSearch = ({ placeholder = "البحث..." }: GlobalSearchProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
-  const [isClient, setIsClient] = useState(false);
-  const searchRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  // Mock data for demonstration
-  const mockResults: SearchResult[] = [
-    {
-      id: "1",
-      title: "أثاث ومفروشات",
-      type: "category",
-      description: "كل ما يخص الأثاث والمفروشات للفنادق",
-      url: "/categories/furniture",
-    },
-    {
-      id: "2",
-      title: "أنظمة وإتصالات",
-      type: "category",
-      description: "أنظمة الاتصالات والتكنولوجيا",
-      url: "/categories/systems",
-    },
-    {
-      id: "3",
-      title: "شركة الجودة للأثاث",
-      type: "company",
-      description: "متخصصون في توريد أثاث الفنادق",
-      url: "/companies/quality-furniture",
-    },
-  ];
-
-  const trendingSearches = [
-    "أنظمة إدارة الفنادق",
-    "أثاث غرف النوم",
-    "معدات المطابخ",
-    "أنظمة الأمان",
-  ];
-
-  // Set client state to handle hydration
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  // Define openSearch function
-  const openSearch = useCallback(() => {
-    setIsOpen(true);
-    // Load recent searches from localStorage
-    if (isClient && typeof window !== "undefined") {
-      const saved = localStorage.getItem("recentSearches");
-      if (saved) {
-        setRecentSearches(JSON.parse(saved));
-      }
-    }
-  }, [isClient]);
-
-  // Handle click outside to close
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        searchRef.current &&
-        !searchRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Handle escape key
-  useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsOpen(false);
-        setQuery("");
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener("keydown", handleEscape);
-      return () => document.removeEventListener("keydown", handleEscape);
-    }
-  }, [isOpen]);
-
-  // Handle Cmd+K / Ctrl+K shortcut to open search
-  useEffect(() => {
-    const handleKeyboardShortcut = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key === "k") {
-        event.preventDefault();
-        openSearch();
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyboardShortcut);
-    return () =>
-      document.removeEventListener("keydown", handleKeyboardShortcut);
-  }, [openSearch]);
-
-  // Focus input when opened
-  useEffect(() => {
-    if (isOpen && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isOpen]);
-
-  // Mock search function
-  const performSearch = async (searchQuery: string) => {
-    if (!searchQuery.trim()) {
-      setResults([]);
-      return;
-    }
-
-    setIsLoading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 300));
-
-    const filteredResults = mockResults.filter(
-      (result) =>
-        result.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        result.description?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    setResults(filteredResults);
-    setIsLoading(false);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setQuery(value);
-    performSearch(value);
-  };
-
-  const handleSearchSelect = (result: SearchResult) => {
-    // Add to recent searches
-    const newRecentSearches = [
-      result.title,
-      ...recentSearches.filter((s) => s !== result.title),
-    ].slice(0, 5);
-    setRecentSearches(newRecentSearches);
-    if (isClient && typeof window !== "undefined") {
-      localStorage.setItem("recentSearches", JSON.stringify(newRecentSearches));
-    }
-
-    // Navigate to result (you can implement navigation here)
-    console.log("Navigate to:", result.url);
-    setIsOpen(false);
-    setQuery("");
-  };
-
-  const handleTrendingSearch = (search: string) => {
-    setQuery(search);
-    performSearch(search);
-  };
-
-  const closeSearch = () => {
-    setIsOpen(false);
-    setQuery("");
-    setResults([]);
-  };
-
-  const getTypeIcon = (type: SearchResult["type"]) => {
-    switch (type) {
-      case "category":
-        return "📂";
-      case "product":
-        return "📦";
-      case "company":
-        return "🏢";
-      default:
-        return "🔍";
-    }
-  };
-
-  const getTypeLabel = (type: SearchResult["type"]) => {
-    switch (type) {
-      case "category":
-        return "فئة";
-      case "product":
-        return "منتج";
-      case "company":
-        return "شركة";
-      default:
-        return "";
-    }
-  };
-
-  // Create overlay component for portal
-  const SearchOverlay = () => (
+// Separate SearchOverlay component to prevent re-renders
+const SearchOverlay = React.memo(
+  ({
+    searchRef,
+    inputRef,
+    query,
+    handleInputChange,
+    closeSearch,
+    isLoading,
+    results,
+    recentSearches,
+    trendingSearches,
+    handleSearchSelect,
+    handleTrendingSearch,
+    getTypeIcon,
+    getTypeLabel,
+  }: {
+    searchRef: React.RefObject<HTMLDivElement | null>;
+    inputRef: React.RefObject<HTMLInputElement | null>;
+    query: string;
+    handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    closeSearch: () => void;
+    isLoading: boolean;
+    results: SearchResult[];
+    recentSearches: string[];
+    trendingSearches: string[];
+    handleSearchSelect: (result: SearchResult) => void;
+    handleTrendingSearch: (search: string) => void;
+    getTypeIcon: (type: SearchResult["type"]) => string;
+    getTypeLabel: (type: SearchResult["type"]) => string;
+  }) => (
     <div className="fixed inset-0 bg-black/50 z-[9999] backdrop-blur-sm">
       <div className="flex items-start justify-center min-h-screen pt-[10vh] px-4">
         <div
@@ -347,7 +191,253 @@ const GlobalSearch = ({ placeholder = "البحث..." }: GlobalSearchProps) => {
         </div>
       </div>
     </div>
+  )
+);
+
+SearchOverlay.displayName = "SearchOverlay";
+
+const GlobalSearch = ({ placeholder = "البحث..." }: GlobalSearchProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [isClient, setIsClient] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Mock data for demonstration - memoized to prevent unnecessary re-renders
+  const mockResults = useMemo<SearchResult[]>(
+    () => [
+      {
+        id: "1",
+        title: "أثاث ومفروشات",
+        type: "category",
+        description: "كل ما يخص الأثاث والمفروشات للفنادق",
+        url: "/categories/furniture",
+      },
+      {
+        id: "2",
+        title: "أنظمة وإتصالات",
+        type: "category",
+        description: "أنظمة الاتصالات والتكنولوجيا",
+        url: "/categories/systems",
+      },
+      {
+        id: "3",
+        title: "شركة الجودة للأثاث",
+        type: "company",
+        description: "متخصصون في توريد أثاث الفنادق",
+        url: "/companies/quality-furniture",
+      },
+    ],
+    []
   );
+
+  const trendingSearches = useMemo(
+    () => [
+      "أنظمة إدارة الفنادق",
+      "أثاث غرف النوم",
+      "معدات المطابخ",
+      "أنظمة الأمان",
+    ],
+    []
+  );
+
+  // Set client state to handle hydration
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Define openSearch function
+  const openSearch = useCallback(() => {
+    setIsOpen(true);
+    // Load recent searches from localStorage
+    if (isClient && typeof window !== "undefined") {
+      const saved = localStorage.getItem("recentSearches");
+      if (saved) {
+        setRecentSearches(JSON.parse(saved));
+      }
+    }
+  }, [isClient]);
+
+  // Handle click outside to close
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Handle escape key
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+        setQuery("");
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleEscape);
+      return () => document.removeEventListener("keydown", handleEscape);
+    }
+  }, [isOpen]);
+
+  // Handle Cmd+K / Ctrl+K shortcut to open search
+  useEffect(() => {
+    const handleKeyboardShortcut = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === "k") {
+        event.preventDefault();
+        openSearch();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyboardShortcut);
+    return () =>
+      document.removeEventListener("keydown", handleKeyboardShortcut);
+  }, [openSearch]);
+
+  // Focus input when opened
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isOpen]);
+
+  // Memoized search function
+  const performSearch = useCallback(
+    async (searchQuery: string) => {
+      if (!searchQuery.trim()) {
+        setResults([]);
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
+
+      try {
+        // Simulate API call
+        await new Promise((resolve) => setTimeout(resolve, 150));
+
+        const filteredResults = mockResults.filter(
+          (result) =>
+            result.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            result.description
+              ?.toLowerCase()
+              .includes(searchQuery.toLowerCase())
+        );
+
+        setResults(filteredResults);
+      } catch (error) {
+        console.error("Search error:", error);
+        setResults([]);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [mockResults]
+  );
+
+  // Debounced search function
+  const debouncedSearch = useCallback(
+    (searchQuery: string) => {
+      const timeoutId = setTimeout(() => {
+        performSearch(searchQuery);
+      }, 300); // 300ms delay
+
+      return () => clearTimeout(timeoutId);
+    },
+    [performSearch]
+  );
+
+  // Debounce effect for search
+  useEffect(() => {
+    if (!query.trim()) {
+      setResults([]);
+      setIsLoading(false);
+      return;
+    }
+
+    const cleanup = debouncedSearch(query);
+    return cleanup;
+  }, [query, debouncedSearch]);
+
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setQuery(value);
+      // performSearch is now handled by the debounced effect
+    },
+    []
+  );
+
+  const handleSearchSelect = useCallback(
+    (result: SearchResult) => {
+      // Add to recent searches
+      const newRecentSearches = [
+        result.title,
+        ...recentSearches.filter((s) => s !== result.title),
+      ].slice(0, 5);
+      setRecentSearches(newRecentSearches);
+      if (isClient && typeof window !== "undefined") {
+        localStorage.setItem(
+          "recentSearches",
+          JSON.stringify(newRecentSearches)
+        );
+      }
+
+      // Navigate to result (you can implement navigation here)
+      console.log("Navigate to:", result.url);
+      setIsOpen(false);
+      setQuery("");
+    },
+    [recentSearches, isClient]
+  );
+
+  const handleTrendingSearch = useCallback((search: string) => {
+    setQuery(search);
+    // The search will be triggered by the debounced effect
+  }, []);
+
+  const closeSearch = useCallback(() => {
+    setIsOpen(false);
+    setQuery("");
+    setResults([]);
+  }, []);
+
+  const getTypeIcon = useCallback((type: SearchResult["type"]) => {
+    switch (type) {
+      case "category":
+        return "📂";
+      case "product":
+        return "📦";
+      case "company":
+        return "🏢";
+      default:
+        return "🔍";
+    }
+  }, []);
+
+  const getTypeLabel = useCallback((type: SearchResult["type"]) => {
+    switch (type) {
+      case "category":
+        return "فئة";
+      case "product":
+        return "منتج";
+      case "company":
+        return "شركة";
+      default:
+        return "";
+    }
+  }, []);
 
   return (
     <>
@@ -369,7 +459,24 @@ const GlobalSearch = ({ placeholder = "البحث..." }: GlobalSearchProps) => {
       {isOpen &&
         isClient &&
         typeof document !== "undefined" &&
-        createPortal(<SearchOverlay />, document.body)}
+        createPortal(
+          <SearchOverlay
+            searchRef={searchRef}
+            inputRef={inputRef}
+            query={query}
+            handleInputChange={handleInputChange}
+            closeSearch={closeSearch}
+            isLoading={isLoading}
+            results={results}
+            recentSearches={recentSearches}
+            trendingSearches={trendingSearches}
+            handleSearchSelect={handleSearchSelect}
+            handleTrendingSearch={handleTrendingSearch}
+            getTypeIcon={getTypeIcon}
+            getTypeLabel={getTypeLabel}
+          />,
+          document.body
+        )}
     </>
   );
 };

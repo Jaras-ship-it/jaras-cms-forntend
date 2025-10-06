@@ -1,7 +1,7 @@
 import { getCategoryBySlug } from "@/data/loader";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { Category, Product } from "@/types";
+import { Category } from "@/types";
 import Link from "next/link";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 
@@ -10,8 +10,9 @@ interface CategoryPageProps {
 }
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
-  console.log("Params: == ", params.slug);
-  const res = await getCategoryBySlug(params.slug);
+  const { slug } = await params;
+  console.log("Params: == ", slug);
+  const res = await getCategoryBySlug(slug);
   const [data] = res.data || [];
   const category = data as Category;
   console.log("Category Data: == ", category);
@@ -72,53 +73,50 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         <div className="py-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-0">
             {/* view products */}
-            {category?.products?.map((product: Product) => (
-              <div
+            {category?.products?.map((product) => (
+              <Link
                 key={product.id}
-                className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl transition-all duration-300 hover:border-blue-200 group cursor-pointer relative overflow-hidden"
-                style={{
-                  background:
-                    "radial-gradient(ellipse at top right, #108afc17 1%, transparent 40%)",
-                }}
+                href={`/categories/${category.slug}/products/${
+                  product.slug || product.id
+                }/suppliers`}
               >
-                {/* Product Icon/Image */}
-                <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-200">
-                    {product.image?.url ? (
-                      <Image
-                        src={process.env.NEXT_PUBLIC_URL + product.image.url}
-                        alt={product.name}
-                        width={32}
-                        height={32}
-                        className="rounded-lg"
-                      />
-                    ) : (
+                <div
+                  key={product.id}
+                  className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl transition-all duration-300 hover:border-blue-200 group cursor-pointer relative overflow-hidden"
+                  style={{
+                    background:
+                      "radial-gradient(ellipse at top right, #108afc17 1%, transparent 40%)",
+                  }}
+                >
+                  {/* Product Icon/Image */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-200">
                       <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
                         <span className="text-white text-sm font-bold">
                           {product.name.charAt(0)}
                         </span>
                       </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button className="p-2 text-gray-400 hover:text-red-500 transition-colors">
+                        <ArrowLeft className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Product Title and Description */}
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                      {product.name}
+                    </h3>
+                    {product.description && (
+                      <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">
+                        {product.description}
+                      </p>
                     )}
                   </div>
-                  <div className="flex gap-2">
-                    <button className="p-2 text-gray-400 hover:text-red-500 transition-colors">
-                      <ArrowLeft className="w-5 h-5" />
-                    </button>
-                  </div>
                 </div>
-
-                {/* Product Title and Description */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                    {product.name}
-                  </h3>
-                  {product.description && (
-                    <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">
-                      {product.description}
-                    </p>
-                  )}
-                </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

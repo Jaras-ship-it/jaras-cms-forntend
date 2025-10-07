@@ -19,6 +19,7 @@ export interface Category extends StrapiBaseEntity {
   slug?: string;
   products?: {
     id: number;
+    slug?: string;
     name: string;
     description?: string;
   }[];

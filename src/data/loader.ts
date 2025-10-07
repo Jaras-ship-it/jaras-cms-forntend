@@ -2,6 +2,7 @@ import qs from "qs";
 const baseUrl = process.env.NEXT_PUBLIC_URL ?? "http://localhost:1337";
 import { unstable_noStore as noStore } from "next/cache";
 import { flattenAttributes } from "@/lib/utils";
+import { ProductWithSuppliers } from "@/types/supplier";
 
 async function fetchData(url: string) {
   const authToken = null;
@@ -102,6 +103,7 @@ export async function getCategoryBySlug(slug: string) {
     populate: {
       products: {
         populate: ["image"],
+        fields: ["id", "name", "description", "slug"],
       },
       Image: true,
     },
@@ -109,7 +111,53 @@ export async function getCategoryBySlug(slug: string) {
       page: 1,
       pageSize: 100,
     },
-    fileds: ["name", "description", "slug", "createdAt"],
+    fields: ["name", "description", "slug", "createdAt"],
   });
   return await fetchData(url.href);
+}
+
+// Get suppliers for a specific product
+export async function getProductSuppliers(
+  productSlug: string
+): Promise<ProductWithSuppliers | null> {
+  noStore();
+  const url = new URL("/api/products", baseUrl);
+  url.search = qs.stringify({
+    filters: {
+      slug: { $eq: productSlug },
+    },
+    populate: {
+      suppliers: {
+        populate: ["logo"],
+        fields: [
+          "id",
+          "name",
+          "description",
+          "slug",
+          "phone",
+          "website",
+          "verified",
+          "address",
+        ],
+      },
+      image: true,
+    },
+    fields: ["id", "name", "description", "slug"],
+  });
+
+  try {
+    const response = await fetchData(url.href);
+    console.log("Raw API response:", response);
+
+    // The response should have a data array with the flattened product
+    const data = response as { data?: ProductWithSuppliers[] };
+    if (data && data.data && data.data.length > 0) {
+      return data.data[0];
+    }
+
+    return null;
+  } catch (error) {
+    console.error("Error in getProductSuppliers:", error);
+    return null;
+  }
 }

@@ -4,9 +4,8 @@ import { StrapiImage, Meta, StrapiBaseEntity } from "./common";
 import { Category } from "./product";
 
 export interface AdBanner extends StrapiBaseEntity {
-  name: string;
   url: string;
-  banner_image: StrapiImage;
+  image: StrapiImage;
   localizations: Record<string, unknown>[];
 }
 
@@ -14,6 +13,7 @@ export interface HeroSlider {
   id: number;
   name: string;
   ads_banners: AdBanner[];
+  slider: AdBanner[];
 }
 
 export interface HeroSection {
@@ -21,7 +21,9 @@ export interface HeroSection {
   id: number;
   heading: string;
   description: string;
-  heroslider: HeroSlider;
+  slider: {
+    banners: AdBanner[];
+  };
 }
 
 export interface CategoriesSection {

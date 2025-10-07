@@ -8,16 +8,33 @@ interface FooterProps {
 }
 
 const Footer = ({ data }: FooterProps) => {
-  const getSocialIcon = (title: string) => {
-    const iconName = title.toLowerCase();
+  const getSocialIcon = (title: string | null | undefined) => {
+    if (!title || typeof title !== 'string' || title.trim() === '') {
+      return <Mail className="w-5 h-5" />;
+    }
+    
+    const iconName = title.toLowerCase().trim();
+    
     switch (iconName) {
+      // English names
       case "facebook":
-        return <Facebook className="w-5 h-5" />;
       case "instagram":
-        return <Instagram className="w-5 h-5" />;
       case "twitter":
-        return <Twitter className="w-5 h-5" />;
       case "linkedin":
+      // Arabic names
+      case "فيسبوك":
+      case "فيس بوك":
+        return <Facebook className="w-5 h-5" />;
+      case "انستغرام":
+      case "انستقرام":
+      case "إنستغرام":
+        return <Instagram className="w-5 h-5" />;
+      case "تويتر":
+      case "x":
+        return <Twitter className="w-5 h-5" />;
+      case "لينكد ان":
+      case "لينكدان":
+      case "لينكد إن":
         return <Linkedin className="w-5 h-5" />;
       default:
         return <Mail className="w-5 h-5" />;
@@ -42,14 +59,14 @@ const Footer = ({ data }: FooterProps) => {
 
           {/* Social Links */}
           <div className="flex items-center gap-4">
-            {data?.socialLinks?.map((social: SocialLink) => (
+            {data?.socialLinks?.filter(social => social.title && social.url)?.map((social: SocialLink) => (
               <a
                 key={social.id}
                 href={social.url}
                 target={social.isExternal ? "_blank" : "_self"}
                 rel={social.isExternal ? "noopener noreferrer" : undefined}
                 className="text-gray-400 hover:text-blue-600 transition-colors duration-200"
-                aria-label={social.title}
+                aria-label={social.title || "Social link"}
               >
                 {getSocialIcon(social.title)}
               </a>

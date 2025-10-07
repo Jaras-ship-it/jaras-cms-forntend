@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { Search } from "lucide-react";
 import { HeroSection as HeroSectionType } from "@/types";
 import BannerSlider from "./BannerSlider";
 
@@ -9,6 +8,7 @@ interface HeroSectionProps {
 }
 
 const HeroSection = ({ data }: HeroSectionProps) => {
+  console.log("HeroSection data:", data);
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
@@ -25,10 +25,9 @@ const HeroSection = ({ data }: HeroSectionProps) => {
             {data.description}
           </p>
         )}
-        {data?.heroslider?.ads_banners &&
-          data.heroslider.ads_banners.length > 0 && (
-            <BannerSlider banners={data.heroslider.ads_banners} />
-          )}
+        {data?.slider?.banners && data.slider.banners.length > 0 && (
+          <BannerSlider banners={data.slider.banners} />
+        )}
       </div>
     </div>
   );

@@ -54,8 +54,8 @@ const BannerSlider = ({
             >
               <div className="relative h-[200px] md:h-[400px] overflow-hidden">
                 <Image
-                  src={process.env.NEXT_PUBLIC_URL + banner.banner_image.url}
-                  alt={banner.banner_image.alternativeText || banner.name}
+                  src={process.env.NEXT_PUBLIC_URL + banner?.image?.url}
+                  alt={banner?.image?.alternativeText || "Banner Image"}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
                   priority={index === 0}

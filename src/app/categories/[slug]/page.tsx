@@ -48,9 +48,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                 />
               </div>
             ) : (
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                <span className="text-blue-600 font-semibold text-lg">
-                  {category?.name?.charAt(0)}
+              <div className="h-full w-full bg-gradient-to-br from-blue-100 via-blue-200 to-blue-300 flex items-center justify-center">
+                <span className="text-blue-700 text-6xl font-bold opacity-80">
+                  {category.name.charAt(0)}
                 </span>
               </div>
             )}

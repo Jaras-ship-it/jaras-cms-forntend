@@ -34,9 +34,9 @@ export async function homePageData() {
         on: {
           "layout.hero-section": {
             populate: {
-              heroslider: {
+              slider: {
                 populate: {
-                  ads_banners: {
+                  banners: {
                     populate: "*",
                   },
                 },

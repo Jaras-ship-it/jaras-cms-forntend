@@ -56,7 +56,7 @@ export interface Link {
 
 export interface SocialLink {
   id: number;
-  title: string;
+  title: string | null;
   url: string;
   isExternal: boolean;
 }

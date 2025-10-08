@@ -1,5 +1,3 @@
-// Common/shared types used across the application
-
 export interface Image {
   url: string;
   width: number;

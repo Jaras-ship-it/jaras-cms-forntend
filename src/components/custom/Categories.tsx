@@ -62,7 +62,10 @@ const Categories = ({ data }: CategoriesProps) => {
               >
                 <div className="h-48 overflow-hidden relative">
                   <Image
-                    src={process.env.NEXT_PUBLIC_URL + category.Image.url}
+                    src={
+                      process.env.NEXT_PUBLIC_STRAPI_MEDIA_URL +
+                      category.Image.url
+                    }
                     alt={category.Image?.alt || category.name}
                     width={280}
                     height={592}

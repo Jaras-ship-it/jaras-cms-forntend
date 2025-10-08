@@ -41,7 +41,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             <div className="w-12 h-12 rounded-xl overflow-hidden border border-gray-200 shadow-sm bg-white flex-shrink-0">
               {category.Image?.url ? (
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_URL || ""}${
+                  src={`${process.env.NEXT_PUBLIC_STRAPI_MEDIA_URL || ""}${
                     category.Image.url
                   }`}
                   alt={category.Image?.alt || category.name}

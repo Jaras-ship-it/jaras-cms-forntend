@@ -18,9 +18,7 @@ const BannerSlider = ({
   if (!banners?.length) return null;
 
   // Helper function to check if banner is valid
-  const isValidBanner = (banner: AdBanner) => banner?.image?.url && banner.id;
-
-  // Filter valid banners
+  const isValidBanner = (banner: AdBanner) => banner?.image?.url && banner.id; // Filter valid banners
   const validBanners = banners.filter(isValidBanner);
 
   if (!validBanners.length) return null;
@@ -61,7 +59,7 @@ const BannerSlider = ({
             >
               <div className="relative h-[200px] md:h-[400px] overflow-hidden">
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_URL || ""}${
+                  src={`${process.env.NEXT_PUBLIC_STRAPI_MEDIA_URL || ""}${
                     banner.image.url
                   }`}
                   alt={banner.image.alternativeText || "Banner Image"}

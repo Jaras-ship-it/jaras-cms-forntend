@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans_Arabic } from "next/font/google";
-import "./globals.css";
+import "@app/globals.css";
 import PrelineScriptWrapper from "../components/PrelineScriptWrapper";
 import { getGlobalData, getGlobalMetaData } from "@/data/loader";
 import Navbar from "@/components/ui/Navbar";

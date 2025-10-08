@@ -36,7 +36,7 @@ export function flattenAttributes(data: unknown): unknown {
   const flattened: Record<string, unknown> = {};
 
   // Iterate over each key in the object
-  for (let key in obj) {
+  for (const key in obj) {
     // Skip inherited properties from the prototype chain
     if (!Object.prototype.hasOwnProperty.call(obj, key)) continue;
 

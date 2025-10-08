@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay, EffectFade } from "swiper/modules";
 import { AdBanner } from "@/types";
+import { buildImageUrl } from "@/lib/utils";
 
 interface BannerSliderProps {
   banners?: AdBanner[];
@@ -59,9 +60,7 @@ const BannerSlider = ({
             >
               <div className="relative h-[200px] md:h-[400px] overflow-hidden">
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_STRAPI_MEDIA_URL || ""}${
-                    banner.image.url
-                  }`}
+                  src={buildImageUrl(banner.image.url)}
                   alt={banner.image.alternativeText || "Banner Image"}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-700"

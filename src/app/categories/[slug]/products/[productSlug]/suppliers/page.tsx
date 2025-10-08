@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { getProductSuppliers } from "@/data/loader";
 import { Supplier } from "@/types/supplier";
+import { buildImageUrl } from "@/lib/utils";
 
 interface SuppliersPageProps {
   params: {
@@ -119,7 +120,7 @@ function SupplierCard({ supplier }: { supplier: Supplier }) {
         <div className="w-16 h-16 rounded-xl overflow-hidden border border-gray-200 shadow-sm bg-white flex-shrink-0">
           {supplier.logo?.url ? (
             <Image
-              src={process.env.NEXT_PUBLIC_STRAPI_MEDIA_URL + supplier.logo.url}
+              src={buildImageUrl(supplier.logo.url)}
               alt={supplier.logo?.alternativeText || supplier.name}
               width={64}
               height={64}

@@ -9,6 +9,29 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/**
+ * Utility function to build proper image URLs
+ * Handles both relative and absolute URLs from Strapi
+ */
+export function buildImageUrl(imageUrl?: string): string {
+  if (!imageUrl) return "";
+
+  // If URL is already absolute (starts with http:// or https://), return as-is
+  if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
+    return imageUrl;
+  }
+
+  // For relative URLs, prepend the base URL
+  const baseUrl = process.env.NEXT_PUBLIC_URL || "";
+
+  // Ensure imageUrl starts with / for proper concatenation
+  const formattedImageUrl = imageUrl.startsWith("/")
+    ? imageUrl
+    : `/${imageUrl}`;
+
+  return `${baseUrl}${formattedImageUrl}`;
+}
+
 type StrapiResponse = {
   data: unknown;
   attributes?: Record<string, unknown>;

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { HeroSection as HeroSectionType } from "@/types";
 import BannerSlider from "./BannerSlider";
 
@@ -8,9 +8,6 @@ interface HeroSectionProps {
 }
 
 const HeroSection = ({ data }: HeroSectionProps) => {
-  console.log("HeroSection data:", data);
-  const [searchQuery, setSearchQuery] = useState("");
-
   return (
     <div className="relative min-h-[400px] pt-[120px]  flex items-center justify-center">
       {/* Content Container */}

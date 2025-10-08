@@ -112,3 +112,23 @@ body {
   -webkit-line-clamp: 1;
   line-clamp: 1;
 }
+
+/* Banner Slider Custom Styles */
+.swiper-pagination {
+  bottom: 16px !important;
+}
+
+.swiper-pagination-bullet {
+  background: rgba(255, 255, 255, 0.7) !important;
+  opacity: 1 !important;
+}
+
+.swiper-pagination-bullet-active {
+  background: #2563eb !important;
+  transform: scale(1.2);
+}
+
+.swiper:hover .swiper-button-prev-custom,
+.swiper:hover .swiper-button-next-custom {
+  opacity: 1 !important;
+}

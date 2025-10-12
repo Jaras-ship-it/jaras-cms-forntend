@@ -116,7 +116,8 @@ const Navbar = ({ data }: Readonly<NavbarProps>) => {
           <div className="md:hidden">
             <GlobalSearch placeholder="البحث..." />
           </div>
-          <a
+          <Link
+            href="/suppliers/register"
             className={`
               w-full sm:w-auto whitespace-nowrap py-2 px-3 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-full border 
               transition-all duration-500 ease-in-out transform hover:scale-105
@@ -127,12 +128,9 @@ const Navbar = ({ data }: Readonly<NavbarProps>) => {
               }
               focus:outline-hidden disabled:opacity-50 disabled:pointer-events-none
             `}
-            href={ctaBtn.url}
-            target={ctaBtn.isExternal ? "_blank" : "_self"}
-            rel={ctaBtn.isExternal ? "noopener noreferrer" : undefined}
           >
-            {ctaBtn.title ?? "إحجز مساحتك الآن"}
-          </a>
+            {ctaBtn?.title ?? "انضم كمورد"}
+          </Link>
 
           <div className="md:hidden">
             <button

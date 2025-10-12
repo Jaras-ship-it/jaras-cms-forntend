@@ -6,6 +6,7 @@ import { getGlobalData, getGlobalMetaData } from "@/data/loader";
 import Navbar from "@/components/ui/Navbar";
 import { GlobalData } from "@/types";
 import Footer from "@/components/ui/Footer";
+import { ToastProvider } from "@/components/ui/ToastProvider";
 
 const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
   weight: ["400", "500", "600", "700"],
@@ -37,12 +38,14 @@ export default async function RootLayout({
   return (
     <html lang="ar" dir="rtl" className={ibmPlexSansArabic.variable}>
       <body className="font-sans antialiased relative">
-        <Navbar data={globalData.header} />
-        <div className="min-h-[calc(100vh-64px)] max-w-[1200px] mx-auto">
-          {children}
-        </div>
-        <Footer data={globalData.footer} />
-        <PrelineScriptWrapper />
+        <ToastProvider>
+          <Navbar data={globalData.header} />
+          <div className="min-h-[calc(100vh-64px)] max-w-[1200px] mx-auto">
+            {children}
+          </div>
+          <Footer data={globalData.footer} />
+          <PrelineScriptWrapper />
+        </ToastProvider>
       </body>
     </html>
   );

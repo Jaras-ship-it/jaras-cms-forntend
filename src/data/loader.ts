@@ -95,6 +95,19 @@ export interface CategoryResponseItem {
   createdAt?: string;
 }
 
+export async function getAllCategories() {
+  noStore();
+  const url = new URL("/api/categories", baseUrl);
+  url.search = qs.stringify({
+    pagination: {
+      page: 1,
+      pageSize: 100,
+    },
+    fields: ["name", "slug"],
+  });
+  return await fetchData(url.href);
+}
+
 export async function getCategoryBySlug(slug: string) {
   noStore();
   const url = new URL("/api/categories", baseUrl);

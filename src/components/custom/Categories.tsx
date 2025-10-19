@@ -4,6 +4,7 @@ import React, { useRef } from "react";
 import { Category } from "@/types";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { getImageUrl } from "@/lib/media";
 
 interface CategoriesProps {
   data?: Category[];
@@ -62,10 +63,7 @@ const Categories = ({ data }: CategoriesProps) => {
               >
                 <div className="h-48 overflow-hidden relative">
                   <Image
-                    src={
-                      process.env.NEXT_PUBLIC_STRAPI_MEDIA_URL +
-                      category.Image.url
-                    }
+                    src={getImageUrl(category.Image)}
                     alt={category.Image?.alt || category.name}
                     width={280}
                     height={592}

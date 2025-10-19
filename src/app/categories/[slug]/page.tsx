@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Category } from "@/types";
 import Link from "next/link";
 import { ArrowLeft, ChevronRight } from "lucide-react";
+import { getImageUrl } from "@/lib/media";
 
 interface CategoryPageProps {
   params: { slug: string };
@@ -41,9 +42,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             <div className="w-12 h-12 rounded-xl overflow-hidden border border-gray-200 shadow-sm bg-white flex-shrink-0">
               {category.Image?.url ? (
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_STRAPI_MEDIA_URL || ""}${
-                    category.Image.url
-                  }`}
+                  src={getImageUrl(category.Image)}
                   alt={category.Image?.alt || category.name}
                   width={48}
                   height={48}

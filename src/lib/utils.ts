@@ -9,6 +9,9 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// Re-export media helpers for convenience
+export { getMediaUrl, getImageUrl, getImageFormat } from "./media";
+
 type StrapiResponse = {
   data: unknown;
   attributes?: Record<string, unknown>;

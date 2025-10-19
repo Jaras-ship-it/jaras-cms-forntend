@@ -1,5 +1,6 @@
 "use client";
 import SupplierModal from "@/components/ui/SupplierModal";
+import { Mail, Phone } from "lucide-react";
 
 export default function SupplierRegistrationPage() {
   const handleOpenModal = () => {
@@ -12,8 +13,8 @@ export default function SupplierRegistrationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white shadow-xl rounded-xl py-8 mt-[80px]">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-[90vh] bg-white shadow-lg border border-slate-200 h-full rounded-xl p-8 my-[80px] flex flex-col">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-between h-full flex-1">
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
@@ -35,7 +36,6 @@ export default function SupplierRegistrationPage() {
               aria-controls="hs-supplier-modal"
               data-hs-overlay="#hs-supplier-modal"
             >
-              
               ابدأ التسجيل الآن
             </button>
           </div>
@@ -117,51 +117,40 @@ export default function SupplierRegistrationPage() {
         </div>
 
         {/* Contact Information */}
-        <div className="text-center mt-12 p-6 bg-blue-50 rounded-xl">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            هل تحتاج مساعدة؟
-          </h3>
-          <p className="text-gray-600 mb-4">
-            فريقنا جاهز لمساعدتك في عملية التسجيل والإجابة على أي استفسارات
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div
+          className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl shadow-slate-900/20 border border-slate-700/50"
+          dir="ltr"
+        >
+          <div className="text-center mb-5">
+            <h3 className="text-lg font-bold text-white mb-2">
+              هل تحتاج مساعدة؟
+            </h3>
+            <p className="text-sm text-slate-300 leading-relaxed">
+              فريقنا جاهز لمساعدتك في عملية التسجيل والإجابة على أي استفسارات
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a
               href="mailto:suppliers@jaras.com"
-              className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="group inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white/10 backdrop-blur-sm text-white rounded-xl hover:bg-white/20 transition-all duration-200 border border-white/10 hover:border-white/20"
             >
-              <svg
-                className="w-4 h-4 ml-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                />
-              </svg>
-              suppliers@jaras.com
+              <span className="text-sm font-medium">info@jaras.com</span>
+              <Mail
+                className="w-4 h-4 group-hover:scale-110 transition-transform"
+                strokeWidth={2}
+              />
             </a>
+
             <a
               href="tel:+966123456789"
-              className="inline-flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              className="group inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white/10 backdrop-blur-sm text-white rounded-xl hover:bg-white/20 transition-all duration-200 border border-white/10 hover:border-white/20"
             >
-              <svg
-                className="w-4 h-4 ml-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                />
-              </svg>
-              +966 12 345 6789
+              <Phone
+                className="w-4 h-4 group-hover:scale-110 transition-transform"
+                strokeWidth={2}
+              />
+              <span className="text-sm font-medium">+966 12 345 6789</span>
             </a>
           </div>
         </div>

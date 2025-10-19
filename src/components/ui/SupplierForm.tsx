@@ -60,6 +60,11 @@ const SupplierForm: React.FC<SupplierFormProps> = ({
     message: string;
   }>({ type: null, message: "" });
 
+  const [validationErrors, setValidationErrors] = useState<{
+    phone?: string;
+    website?: string;
+  }>({});
+
   // Fetch categories on component mount
   useEffect(() => {
     const fetchCategories = async () => {
@@ -80,6 +85,57 @@ const SupplierForm: React.FC<SupplierFormProps> = ({
     fetchCategories();
   }, []);
 
+  // Validation functions
+  const validatePhoneNumber = (phone: string): string | null => {
+    if (!phone.trim()) {
+      return "رقم الهاتف مطلوب";
+    }
+
+    // Remove all spaces and special characters except + for validation
+    const cleanPhone = phone.replace(/[\s\-\(\)]/g, "");
+
+    // Saudi phone number patterns
+    const saudiPhoneRegex = /^(\+966|966|0)?[5][0-9]{8}$/;
+
+    if (!saudiPhoneRegex.test(cleanPhone)) {
+      return "يرجى إدخال رقم هاتف صحيح (مثال: +966 50 123 4567)";
+    }
+
+    return null;
+  };
+
+  const validateWebsiteUrl = (url: string): string | null => {
+    if (!url.trim()) {
+      return null; // Website is optional
+    }
+
+    try {
+      new URL(url);
+      if (!url.startsWith("http://") && !url.startsWith("https://")) {
+        return "يرجى إدخال رابط صحيح يبدأ بـ http:// أو https://";
+      }
+      return null;
+    } catch {
+      return "يرجى إدخال رابط صحيح يبدأ بـ http:// أو https://";
+    }
+  };
+
+  // Clean phone number for submission (remove spaces and formatting)
+  const cleanPhoneNumber = (phone: string): string => {
+    let cleaned = phone.replace(/[\s\-\(\)]/g, "");
+
+    // Normalize to international format
+    if (cleaned.startsWith("0")) {
+      cleaned = "+966" + cleaned.substring(1);
+    } else if (cleaned.startsWith("966") && !cleaned.startsWith("+966")) {
+      cleaned = "+" + cleaned;
+    } else if (!cleaned.startsWith("+966")) {
+      cleaned = "+966" + cleaned;
+    }
+
+    return cleaned;
+  };
+
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -90,10 +146,47 @@ const SupplierForm: React.FC<SupplierFormProps> = ({
       ...prev,
       [name]: value,
     }));
+
+    // Real-time validation
+    if (name === "phone") {
+      const phoneError = validatePhoneNumber(value);
+      setValidationErrors((prev) => ({
+        ...prev,
+        phone: phoneError || undefined,
+      }));
+    } else if (name === "website") {
+      const websiteError = validateWebsiteUrl(value);
+      setValidationErrors((prev) => ({
+        ...prev,
+        website: websiteError || undefined,
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate all fields before submission
+    const phoneError = validatePhoneNumber(formData.phone);
+    const websiteError = validateWebsiteUrl(formData.website);
+
+    // Update validation errors
+    setValidationErrors({
+      phone: phoneError || undefined,
+      website: websiteError || undefined,
+    });
+
+    // Check for validation errors
+    if (phoneError || websiteError) {
+      setSubmitStatus({
+        type: "error",
+        message: "يرجى تصحيح الأخطاء في النموذج قبل الإرسال.",
+      });
+      if (onError) {
+        onError(new Error("Validation errors"));
+      }
+      return;
+    }
 
     // Validate categories
     if (formData.categories.length === 0) {
@@ -116,6 +209,14 @@ const SupplierForm: React.FC<SupplierFormProps> = ({
     }
 
     try {
+      // Prepare data with cleaned phone number
+      const submissionData = {
+        ...formData,
+        phone: cleanPhoneNumber(formData.phone),
+        timestamp: new Date().toISOString(),
+        source: "supplier-form",
+      };
+
       // Send to n8n webhook
       if (webhookUrl) {
         const response = await fetch(webhookUrl, {
@@ -123,11 +224,7 @@ const SupplierForm: React.FC<SupplierFormProps> = ({
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            ...formData,
-            timestamp: new Date().toISOString(),
-            source: "supplier-form",
-          }),
+          body: JSON.stringify(submissionData),
         });
 
         if (!response.ok) {
@@ -161,6 +258,9 @@ const SupplierForm: React.FC<SupplierFormProps> = ({
         categories: [],
         contactPerson: "",
       });
+
+      // Clear validation errors
+      setValidationErrors({});
     } catch (error) {
       console.error("Error submitting supplier form:", error);
       setSubmitStatus({
@@ -285,10 +385,23 @@ const SupplierForm: React.FC<SupplierFormProps> = ({
             name="phone"
             value={formData.phone}
             onChange={handleInputChange}
-            className={inputClasses}
+            className={cn(
+              inputClasses,
+              validationErrors.phone
+                ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                : formData.phone && !validationErrors.phone
+                ? "border-green-500 focus:border-green-500 focus:ring-green-500"
+                : ""
+            )}
             placeholder="+966 XX XXX XXXX"
+            disabled={isSubmitting}
             required
           />
+          {validationErrors.phone && (
+            <p className="text-sm text-red-500 mt-1">
+              {validationErrors.phone}
+            </p>
+          )}
         </div>
 
         {/* Website */}
@@ -305,9 +418,22 @@ const SupplierForm: React.FC<SupplierFormProps> = ({
             name="website"
             value={formData.website}
             onChange={handleInputChange}
-            className={inputClasses}
+            className={cn(
+              inputClasses,
+              validationErrors.website
+                ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                : formData.website && !validationErrors.website
+                ? "border-green-500 focus:border-green-500 focus:ring-green-500"
+                : ""
+            )}
             placeholder="https://www.company.com"
+            disabled={isSubmitting}
           />
+          {validationErrors.website && (
+            <p className="text-sm text-red-500 mt-1">
+              {validationErrors.website}
+            </p>
+          )}
         </div>
 
         {/* Categories */}

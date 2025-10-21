@@ -1,12 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { getAllCategories, CategoryResponseItem } from "@/data/loader";
+import { getCategoriesWithProducts } from "@/data/loader";
+import { Category } from "@/types/product";
+import { useToast } from "./ToastProvider";
 import MultiSelect from "@/components/ui/MultiSelect";
-
-interface CategoriesResponse {
-  data?: CategoryResponseItem[];
-}
 
 interface SupplierFormData {
   name: string;
@@ -15,7 +13,8 @@ interface SupplierFormData {
   website: string;
   address: string;
   description: string;
-  categories: string[]; // Changed from category to categories array
+  selectedCategory: string; // Single category selection
+  products: string[]; // Array of product documentIds
   contactPerson: string;
 }
 
@@ -40,6 +39,7 @@ const SupplierForm: React.FC<SupplierFormProps> = ({
   showHeader = true,
   showWrapper = true,
 }) => {
+  const { showToast } = useToast();
   const [formData, setFormData] = useState<SupplierFormData>({
     name: "",
     email: "",
@@ -47,13 +47,17 @@ const SupplierForm: React.FC<SupplierFormProps> = ({
     website: "",
     address: "",
     description: "",
-    categories: [], // Changed from category to categories array
+    selectedCategory: "", // Single category selection
+    products: [], // Array of product documentIds
     contactPerson: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [availableCategories, setAvailableCategories] = useState<
-    CategoryResponseItem[]
+  const [availableCategories, setAvailableCategories] = useState<Category[]>(
+    []
+  );
+  const [availableProducts, setAvailableProducts] = useState<
+    Array<{ id: number; documentId: string; name: string }>
   >([]);
   const [submitStatus, setSubmitStatus] = useState<{
     type: "success" | "error" | null;
@@ -67,21 +71,17 @@ const SupplierForm: React.FC<SupplierFormProps> = ({
 
   // Fetch categories on component mount
   useEffect(() => {
-    const fetchCategories = async () => {
+    async function fetchCategories() {
       try {
-        const response = (await getAllCategories()) as CategoriesResponse;
-        // The response structure from Strapi typically has a data property
-        if (response && Array.isArray(response.data)) {
-          setAvailableCategories(response.data);
-        } else if (response && Array.isArray(response)) {
-          // In case the response is directly an array
-          setAvailableCategories(response as CategoryResponseItem[]);
-        }
+        const response = await getCategoriesWithProducts();
+        // Handle both possible response formats
+        const categories =
+          (response as { data?: Category[] })?.data || response || [];
+        setAvailableCategories(categories as Category[]);
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        console.error("Failed to fetch categories:", error);
       }
-    };
-
+    }
     fetchCategories();
   }, []);
 
@@ -189,14 +189,8 @@ const SupplierForm: React.FC<SupplierFormProps> = ({
     }
 
     // Validate categories
-    if (formData.categories.length === 0) {
-      setSubmitStatus({
-        type: "error",
-        message: "يرجى اختيار فئة واحدة على الأقل من فئات الخدمة.",
-      });
-      if (onError) {
-        onError(new Error("No categories selected"));
-      }
+    if (formData.products.length === 0) {
+      showToast("error", "Please select at least one product");
       return;
     }
 
@@ -255,11 +249,10 @@ const SupplierForm: React.FC<SupplierFormProps> = ({
         website: "",
         address: "",
         description: "",
-        categories: [],
+        selectedCategory: "",
+        products: [],
         contactPerson: "",
-      });
-
-      // Clear validation errors
+      }); // Clear validation errors
       setValidationErrors({});
     } catch (error) {
       console.error("Error submitting supplier form:", error);
@@ -439,27 +432,76 @@ const SupplierForm: React.FC<SupplierFormProps> = ({
         {/* Categories */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            فئات الخدمة <span className="text-red-500">*</span>
+            فئة الخدمة <span className="text-red-500">*</span>
           </label>
-          <MultiSelect
-            options={availableCategories.map((category) => ({
-              value: category.slug || category.id.toString(),
-              label: category.name,
-            }))}
-            value={formData.categories}
-            onChange={(selectedCategories) =>
+          <select
+            id="category"
+            value={formData.selectedCategory}
+            onChange={(e) => {
+              const selectedCategoryId = e.target.value;
               setFormData((prev) => ({
                 ...prev,
-                categories: selectedCategories,
-              }))
-            }
-            placeholder="اختر فئات الخدمة..."
-            required={true}
-            className="w-full"
-          />
-          {formData.categories.length === 0 && (
+                selectedCategory: selectedCategoryId,
+                products: [], // Reset products when category changes
+              }));
+
+              // Filter products based on selected category
+              if (selectedCategoryId) {
+                const selectedCategory = availableCategories.find(
+                  (cat) => cat.documentId === selectedCategoryId
+                );
+                if (selectedCategory?.products) {
+                  setAvailableProducts(
+                    selectedCategory.products.map((product) => ({
+                      id: product.id,
+                      documentId: String(product.documentId || product.id), // Ensure documentId is always a string
+                      name: product.name,
+                    }))
+                  );
+                }
+              } else {
+                setAvailableProducts([]);
+              }
+            }}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+          >
+            <option value="">اختر فئة الخدمة</option>
+            {availableCategories.map((category) => (
+              <option key={category.documentId} value={category.documentId}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+          {!formData.selectedCategory && (
+            <p className="text-sm text-red-500 mt-1">يرجى اختيار فئة</p>
+          )}
+
+          {formData.selectedCategory && (
+            <>
+              <label className="block text-sm font-medium text-gray-700 mb-2 mt-4">
+                المنتجات <span className="text-red-500">*</span>
+              </label>
+              <MultiSelect
+                options={availableProducts.map((product) => ({
+                  value: product.documentId,
+                  label: product.name,
+                }))}
+                value={formData.products}
+                onChange={(selectedProducts) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    products: selectedProducts,
+                  }))
+                }
+                placeholder="اختر المنتجات..."
+                required={true}
+                className="w-full"
+              />
+            </>
+          )}
+          {formData.products.length === 0 && formData.selectedCategory && (
             <p className="text-sm text-red-500 mt-1">
-              يرجى اختيار فئة واحدة على الأقل
+              يرجى اختيار منتج واحد على الأقل
             </p>
           )}
         </div>

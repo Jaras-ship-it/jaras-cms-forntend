@@ -108,9 +108,9 @@ const Navbar = ({ data }: Readonly<NavbarProps>) => {
 
         <div className="flex items-center gap-1">
           <div className="hidden md:flex w-fit ">
-            <div className="w-80 md:w-96">
+            {/* <div className="w-80 md:w-96">
               <GlobalSearch placeholder="البحث في دليل الشركات..." />
-            </div>
+            </div> */}
           </div>
           {/* Mobile Search Button */}
           <div className="md:hidden">

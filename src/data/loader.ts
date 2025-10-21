@@ -174,3 +174,22 @@ export async function getProductSuppliers(
     return null;
   }
 }
+
+export async function getCategoriesWithProducts() {
+  noStore();
+  const url = new URL("/api/categories", baseUrl);
+  url.search = qs.stringify({
+    populate: {
+      products: {
+        fields: ["id", "documentId", "name", "slug"],
+      },
+      Image: true,
+    },
+    pagination: {
+      page: 1,
+      pageSize: 100,
+    },
+    fields: ["id", "documentId", "name", "description", "slug"],
+  });
+  return await fetchData(url.href);
+}

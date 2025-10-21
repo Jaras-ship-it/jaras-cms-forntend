@@ -18,11 +18,12 @@ export default function SupplierRegistrationPage() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            انضم إلى شبكة جرس
+            انضم إلى دليل الموردين والشركات
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">
-            انضم إلى أكبر شبكة موردين للفنادق في المملكة العربية السعودية وتواصل
-            مع آلاف الفنادق التي تبحث عن خدماتك ومنتجاتك
+            كن جزءًا من أكبر منصة تجمع مورّدي قطاع الضيافة في المملكة العربية
+            السعودية، وابدأ في عرض منتجاتك والتعاون مع آلاف الفنادق التي تحتاج
+            إلى خدماتك.
           </p>
 
           {/* CTA to open modal */}
@@ -36,7 +37,7 @@ export default function SupplierRegistrationPage() {
               aria-controls="hs-supplier-modal"
               data-hs-overlay="#hs-supplier-modal"
             >
-              ابدأ التسجيل الآن
+              أنضم الى دليل جرس
             </button>
           </div>
         </div>
@@ -135,7 +136,7 @@ export default function SupplierRegistrationPage() {
               href="mailto:suppliers@jaras.com"
               className="group inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white/10 backdrop-blur-sm text-white rounded-xl hover:bg-white/20 transition-all duration-200 border border-white/10 hover:border-white/20"
             >
-              <span className="text-sm font-medium">info@jaras.com</span>
+              <span className="text-sm font-medium">guide@jaras.io</span>
               <Mail
                 className="w-4 h-4 group-hover:scale-110 transition-transform"
                 strokeWidth={2}
@@ -143,14 +144,14 @@ export default function SupplierRegistrationPage() {
             </a>
 
             <a
-              href="tel:+966123456789"
+              href="tel:++966558297633"
               className="group inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white/10 backdrop-blur-sm text-white rounded-xl hover:bg-white/20 transition-all duration-200 border border-white/10 hover:border-white/20"
             >
               <Phone
                 className="w-4 h-4 group-hover:scale-110 transition-transform"
                 strokeWidth={2}
               />
-              <span className="text-sm font-medium">+966 12 345 6789</span>
+              <span className="text-sm font-medium">+966 55 829 7633</span>
             </a>
           </div>
         </div>

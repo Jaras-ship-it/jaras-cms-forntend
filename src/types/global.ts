@@ -1,7 +1,7 @@
 // Global application data types
 
 import { Header, Footer } from "./layout";
-import { Meta, StrapiBaseEntity } from "./common";
+import { Meta, StrapiBaseEntity, StrapiImage } from "./common";
 
 export interface GlobalData extends StrapiBaseEntity {
   siteName: string;
@@ -9,4 +9,5 @@ export interface GlobalData extends StrapiBaseEntity {
   header: Header;
   footer: Footer;
   meta: Meta;
+  favicon?: StrapiImage;
 }

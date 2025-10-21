@@ -64,6 +64,7 @@ export async function getGlobalData() {
   const url = new URL("/api/global", baseUrl);
   url.search = qs.stringify({
     populate: [
+      "favicon",
       "header.logoText",
       "header.ctaBtn",
       "footer.logoText",
@@ -77,6 +78,7 @@ export async function getGlobalMetaData() {
   const url = new URL("/api/global", baseUrl);
   url.search = qs.stringify({
     fields: ["siteName", "siteDescription"],
+    populate: ["favicon"],
   });
   return await fetchData(url.href);
 }

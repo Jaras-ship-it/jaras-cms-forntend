@@ -113,7 +113,7 @@ const Navbar = ({ data }: Readonly<NavbarProps>) => {
             </div> */}
           </div>
           {/* Mobile Search Button */}
-          <div className="md:hidden">
+          <div className="hidden">
             <GlobalSearch placeholder="البحث..." />
           </div>
           <Link
@@ -132,7 +132,7 @@ const Navbar = ({ data }: Readonly<NavbarProps>) => {
             {ctaBtn?.title ?? "انضم كمورد"}
           </Link>
 
-          <div className="md:hidden">
+          <div className="hidden">
             <button
               type="button"
               className={`

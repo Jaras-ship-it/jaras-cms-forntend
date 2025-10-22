@@ -4,7 +4,7 @@ import { StrapiImage, Meta, StrapiBaseEntity } from "./common";
 import { Category } from "./product";
 
 export interface AdBanner extends StrapiBaseEntity {
-  url: string;
+  target: string;
   image: StrapiImage;
   localizations: Record<string, unknown>[];
 }

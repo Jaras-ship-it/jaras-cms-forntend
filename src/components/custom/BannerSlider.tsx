@@ -19,11 +19,12 @@ const BannerSlider = ({
   if (!banners?.length) return null;
 
   // Helper function to check if banner is valid
-  const isValidBanner = (banner: AdBanner) => banner?.image?.url && banner.id; // Filter valid banners
-  const validBanners = banners.filter(isValidBanner);
+  const isValidBanner = (banner: AdBanner) => banner?.target && banner.id; // Filter valid banners
 
+  const validBanners = banners.filter(isValidBanner);
   if (!validBanners.length) return null;
 
+  console.log("Valid Banners:", validBanners);
   return (
     <div className="relative w-full mx-auto mt-9 mb-6">
       <Swiper
@@ -53,9 +54,9 @@ const BannerSlider = ({
         {validBanners.map((banner, index) => (
           <SwiperSlide key={banner.id}>
             <a
-              href={banner.url || "#"}
-              target={banner.url ? "_blank" : "_self"}
-              rel={banner.url ? "noopener noreferrer" : undefined}
+              href={banner.target}
+              target={banner.target ? "_blank" : "_self"}
+              rel={banner.target ? "noopener noreferrer" : undefined}
               className="block relative group"
             >
               <div className="relative h-[200px] md:h-[400px] overflow-hidden">
